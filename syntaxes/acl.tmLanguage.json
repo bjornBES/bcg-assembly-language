@@ -1,0 +1,174 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "assembled cpu language",
+	"patterns": [
+		{
+			"include": "#statments"
+		}
+	],
+	"repository": {
+		"statments": {
+			"patterns": [
+				{
+					"include": "#expressions"
+				},
+				{
+					"include": "#directives"
+				},
+				{
+					"include": "#marcos"
+				},
+				{
+					"name": "keyword.control.ACL",
+					"comment": "BGC instructions",
+					"match": "^[\\s]*[A-Za-z]*\\s"
+				},
+				{
+					"name": "comment.line.simicolon",
+					"match": "[\\s]*;\\s.*"
+				},
+				{
+					"name": "variable.label.ACL",
+					"match": "\\b([\\s]*|)\\b(\\s*|)[A-Za-z_]*:"
+				}
+			]
+		},
+		"marcos":{
+			"patterns": [
+				{
+					"name": "keyword.control.marco",
+					"match": "^\\@[A-Za-z]*\\s\\%[A-Za-z]*"
+				},
+				{
+					"name": "keyword.control.marco.arguments",
+					"comment": "Marco arguments in use",
+					"match": "[,\\s]*\\%[A-Za-z]*"
+				},
+				{
+					"name": "keyword.control.marco.end",
+					"match": "[,\\s]*\\.ENDM"
+				}
+			]
+		},
+		"directives": {
+			"patterns": [
+				{
+					"name": "storage.modifier.byte.ACL",
+					"match": "[\\s]*\\.\\b(byte|db)"
+				},
+				{
+					"name": "storage.modifier.word.ACL",
+					"match": "[\\s]*\\.\\b(word|dw)"
+				},
+				{
+					"name": "storage.modifier.dword.ACL",
+					"match": "[\\s]*\\.\\b(dword|dd)"
+				},
+				{
+					"name": "storage.modifier.dword.ACL",
+					"match": "[\\s]*\\.\\b(dword|dd)"
+				},
+				{
+					"name": "keyword.control.directive.section",
+					"match": "[\\s]*\\.\\b(section|SECTION)\\b\\s\\b(DATA|TEXT|HEADER)\\b"
+				},
+				{
+					"name": "storage.modifier.visibility",
+					"comment": "global",
+					"match": "^[\\s]*\\.\\b(global|GLOBAL)\\s[A-Za-z_]*:"
+				},
+				{
+					"name": "keyword.control.directive.includeil",
+					"comment": "include file in line",
+					"match": "[\\s]*\\.\\b(includeil|INCLUDEIL)"
+				},
+				{
+					"name": "keyword.control.directive.include",
+					"comment": "include file",
+					"match": "[\\s]*\\.\\b(include|INCLUDE)"
+				},
+				{
+					"name": "keyword.control.directive.org",
+					"match": "[\\s]*\\.\\b(org|ORG)"
+				}
+			]
+		},
+		"expressions": {
+			"patterns": [
+				{
+					"name": "variable.language.ACL",
+					"comment": "ACL register name",
+					"match": "[\\s]*\\b(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x[a-z]|y[a-z]|hl|h|l|pc[h-l]|f|il|sp|bp|r[1-4]|f[1-4]|s|ds|mb|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X[A-Z]|Y[A-Z]|HL|H|L|PC[H-L]|F|IL|SP|BP|R[1-4]|F[1-4]|S|DS|MB)\\b"
+				},
+				{
+					"comment": "for Paths and shit",
+					"name": "constant.character",
+					"match": "[\\s]*[\\.]/[A-Za-z/]*\\.[A-Za-z]*"
+				},
+				{
+					"name": "string.quoted.double.ACL",
+					"begin": "[\\s,]*\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.ACL",
+							"match": "\\[\\.]"
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.ACL",
+					"begin": "[\\s,]*\\'",
+					"end": "\\'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.ACL",
+							"match": "\\[\\.]"
+						}
+					]
+				},
+				{
+					"comment": "Segment Address [register:register]",
+					"name": "variable.parameter.segment",
+					"match": "[,\\s]*\\[(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS):(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS)\\]"
+				},
+				{
+					"comment": "Segment Address [immdiate:register]",
+					"name": "variable.parameter.segment",
+					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*):(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS)\\]"
+				},
+				{
+					"comment": "Long Address []",
+					"name": "variable.parameter.long",
+					"match": "[,\\s]*\\b(long|LONG)\\s\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+				},
+				{
+					"comment": "Address []",
+					"name": "variable.parameter",
+					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+				},
+				{
+					"name": "variable.parameter",
+					"match": "[,\\s]*\\$"
+				},
+				{
+					"name": "variable.parameter.label",
+					"match": "[,\\s]*\\&[A-Za-z_]*"
+				},
+				{
+					"name": "constant.numeric",
+					"match": "[,\\s]*(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*)"
+				},
+				{
+					"name": "constant.numeric.signed",
+					"match": "[,\\s]*-(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*)"
+				},
+				{
+					"name": "constant.numeric.floats",
+					"match": "[,\\s]*\\([\\d_\\.]*\\)f"
+				}
+			]
+		}
+	},
+	"scopeName": "source.acl"
+}

@@ -1,0 +1,72 @@
+{
+  "name": "bgc-assembly-language",
+  "displayName": "BGC Assembly language",
+  "description": "This is the README for your extension \"bgc-assembly-language\". After writing up a brief description, we recommend including the following sections.",
+  "version": "0.0.1",
+  "publisher": "BjornBEs",
+  "engines": {
+    "vscode": "^1.90.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bjornBES/BGC-Assembly-language.git"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "src/extension.ts",
+  "contributes": {
+    "commands":[
+      {
+        "command": "extension.helloWorld",
+        "title": "HelloWorld"
+      }
+    ],
+    "languages": [
+      {
+        "id": "acl",
+        "aliases": [
+          "assembled cpu language",
+          "acl"
+        ],
+        "extensions": [
+          ".acl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "acl",
+        "scopeName": "source.acl",
+        "path": "./syntaxes/acl.tmLanguage.json"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^16.18.98",
+    "@types/vscode": "^1.90.0",
+    "@typescript-eslint/eslint-plugin": "^5.14.0",
+    "@typescript-eslint/parser": "^5.14.0",
+    "@vscode/test-electron": "^2.3.8",
+    "esbuild": "^0.17.19",
+    "eslint": "^8.41.0",
+    "glob": "^10.2.6",
+    "mocha": "^10.2.0",
+    "rimraf": "^5.0.1",
+    "run-script-os": "^1.1.6",
+    "typescript": "^4.9.5",
+    "vscode-test": "^1.5.1"
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "BjornBEs",
+  "license": "MIT"
+}
