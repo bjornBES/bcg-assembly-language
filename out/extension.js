@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -25,12 +21,35 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.deactivate = exports.activate = void 0;
 const vscode = __importStar(require("vscode"));
+const hover_1 = require("./hover");
+const completionProposer_1 = require("./completionProposer");
+const SyntaxHighlighting_1 = require("./SyntaxHighlighting");
+const GlobalShit = __importStar(require("./GlobalVariabels"));
+const selector = { language: 'acl', scheme: 'file' };
 function activate(context) {
-    let disposable = vscode.commands.registerCommand('extension.helloWorld', () => {
-        vscode.window.showInformationMessage('Hello World from your VSCode Extension!');
-    });
-    context.subscriptions.push(disposable);
+    GlobalShit.GetInstructions();
+    GlobalShit.GetRegister();
+    context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
+        if (document.languageId !== "acl")
+            return;
+        if (GlobalShit.FilePaths.includes(document))
+            return;
+        GlobalShit.URIS.forEach(uri => {
+            if (document.uri.path == uri.path) {
+                //vscode.window.showInformationMessage("Adding " + document.fileName);
+                GlobalShit.FilePaths.push(document);
+            }
+        });
+    }));
+    context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
+        const document = event.document;
+        GlobalShit.GetSymbols(document);
+    }));
+    context.subscriptions.push(vscode.languages.registerHoverProvider(selector, new hover_1.ASMHoverProvider()));
+    context.subscriptions.push(vscode.languages.registerCompletionItemProvider(selector, new completionProposer_1.ASMCompletionProposer(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(), ".", "[", "&"));
+    context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new SyntaxHighlighting_1.ASMSyntaxHighlighting(), SyntaxHighlighting_1.legend));
 }
 exports.activate = activate;
-function deactivate() { }
+function deactivate() {
+}
 exports.deactivate = deactivate;

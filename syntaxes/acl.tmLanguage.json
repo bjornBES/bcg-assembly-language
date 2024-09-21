@@ -10,6 +10,24 @@
 		"statments": {
 			"patterns": [
 				{
+					"name": "variable.label.ACL",
+					"match": "^[\\s]*[A-Za-z_][A-Za-z_0-9]*:"
+				},
+				{
+					"name": "keyword.control.ACL",
+					"comment": "BGC instructions upper",
+					"match": "^[\\s]*\\b(MOV[A-Z]|MOV)\\s"
+				},
+				{
+					"name": "keyword.control.ACL",
+					"comment": "BGC instructions lower",
+					"match": "^[\\s]*\\b(mov[a-z]|mov)\\s"
+				},
+				{
+					"name": "variable.name",
+					"match": "\\$[A-Z-a-z_][A-Z-a-z_0-9]*"
+				},
+				{
 					"include": "#expressions"
 				},
 				{
@@ -19,21 +37,15 @@
 					"include": "#marcos"
 				},
 				{
-					"name": "keyword.control.ACL",
-					"comment": "BGC instructions",
-					"match": "^[\\s]*[A-Za-z]*\\s"
+					"include": "#struct"
 				},
 				{
 					"name": "comment.line.simicolon",
 					"match": "[\\s]*;\\s.*"
-				},
-				{
-					"name": "variable.label.ACL",
-					"match": "\\b([\\s]*|)\\b(\\s*|)[A-Za-z_]*:"
 				}
 			]
 		},
-		"marcos":{
+		"marcos": {
 			"patterns": [
 				{
 					"name": "keyword.control.marco",
@@ -61,8 +73,8 @@
 					"match": "[\\s]*\\.\\b(word|dw)"
 				},
 				{
-					"name": "storage.modifier.dword.ACL",
-					"match": "[\\s]*\\.\\b(dword|dd)"
+					"name": "storage.modifier.tbyte.ACL",
+					"match": "[\\s]*\\.\\b(tbyte|dt)"
 				},
 				{
 					"name": "storage.modifier.dword.ACL",
@@ -90,6 +102,34 @@
 				{
 					"name": "keyword.control.directive.org",
 					"match": "[\\s]*\\.\\b(org|ORG)"
+				},
+				{
+					"name": "keyword.control.directive.struct",
+					"match": "^\\.struct"
+				},
+				{
+					"name": "keyword.control.directive.endStruct",
+					"match": "^\\.EndStruct"
+				},
+				{
+					"name": "storage.modifier.byte.ACL",
+					"match": "[\\s]*\\.\\b(resbyte|RESBYTE)"
+				},
+				{
+					"name": "storage.modifier.word.ACL",
+					"match": "[\\s]*\\.\\b(resword|RESWORD)"
+				},
+				{
+					"name": "storage.modifier.tbyte.ACL",
+					"match": "[\\s]*\\.\\b(restbyte|RESTBYTE)"
+				},
+				{
+					"name": "storage.modifier.dword.ACL",
+					"match": "[\\s]*\\.\\b(resdword|RESDWORD)"
+				},
+				{
+					"name": "storage.modifier.res.ACL",
+					"match": "[\\s]*\\.\\b(res|RES)"
 				}
 			]
 		},
@@ -98,7 +138,17 @@
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL register name",
-					"match": "[\\s]*\\b(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x[a-z]|y[a-z]|hl|h|l|pc[h-l]|f|il|sp|bp|r[1-4]|f[1-4]|s|ds|mb|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X[A-Z]|Y[A-Z]|HL|H|L|PC[H-L]|F|IL|SP|BP|R[1-4]|F[1-4]|S|DS|MB)\\b"
+					"match": "[\\s]*\\b(pc[h-l]|f|il|sp|bp|r[1-4]|f[1-4]|s|ds|mb|PC[H-L]|F|IL|SP|BP|R[1-4]|F[1-4]|S|DS|MB)\\b"
+				},
+				{
+					"name": "variable.language.ACL",
+					"comment": "ACL GP register name",
+					"match": "[\\s]*\\b(a[a-z]|b[a-z]|c[a-z]|d[a-z]|a|b|c|d|hl|h|l|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|A|B|C|D|HL|H|L)\\b"
+				},
+				{
+					"name": "variable.language.ACL",
+					"comment": "ACL Stack register name",
+					"match": "[\\s]*\\b(bpx|bp|spx|sp|BPX|BP|SPX|SP)\\b"
 				},
 				{
 					"comment": "for Paths and shit",
@@ -130,17 +180,22 @@
 				{
 					"comment": "Segment Address [register:register]",
 					"name": "variable.parameter.segment",
-					"match": "[,\\s]*\\[(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS):(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS)\\]"
+					"match": "[,\\s]*\\[(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS):(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS)\\]"
 				},
 				{
 					"comment": "Segment Address [immdiate:register]",
 					"name": "variable.parameter.segment",
-					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*):(a[a-z]|b[a-z]|c[a-z]|d[a-z]|x|y|hl|h|l|sp|bp|s|ds|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|X|Y|HL|H|L|SP|BP|S|DS)\\]"
+					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*):(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS)\\]"
 				},
 				{
 					"comment": "Long Address []",
 					"name": "variable.parameter.long",
 					"match": "[,\\s]*\\b(long|LONG)\\s\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+				},
+				{
+					"comment": "Far Address []",
+					"name": "variable.parameter.far",
+					"match": "[,\\s]*\\b(far|FAR)\\s\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
 				},
 				{
 					"comment": "Address []",
@@ -153,7 +208,21 @@
 				},
 				{
 					"name": "variable.parameter.label",
-					"match": "[,\\s]*\\&[A-Za-z_]*"
+					"match": "[,\\s]*\\%[A-Za-z_][A-Za-z_0-9]*"
+				},
+				{
+					"name": "variable.parameter.label",
+					"match": "[,\\s]*\\@[A-Za-z_]*"
+				},
+				{
+					"comment": "Long Address []",
+					"name": "variable.parameter.label.long",
+					"match": "[,\\s]*\\b(long|LONG)\\s\\@[A-Za-z_]*"
+				},
+				{
+					"comment": "Far Address []",
+					"name": "variable.parameter.label.far",
+					"match": "[,\\s]*\\b(far|FAR)\\s\\@[A-Za-z_]*"
 				},
 				{
 					"name": "constant.numeric",
@@ -166,6 +235,38 @@
 				{
 					"name": "constant.numeric.floats",
 					"match": "[,\\s]*\\([\\d_\\.]*\\)f"
+				},
+				{
+					"name": "variable.parameter",
+					"match": "[,\\s]*\\&[A-Za-z_]*"
+				},
+				{
+					"name": "storage.modifier.byte.ACL",
+					"match": "[\\s]*byte"
+				},
+				{
+					"name": "storage.modifier.word.ACL",
+					"match": "[\\s]*word"
+				},
+				{
+					"name": "storage.modifier.tbyte.ACL",
+					"match": "[\\s]*tbyte"
+				},
+				{
+					"name": "storage.modifier.dword.ACL",
+					"match": "[\\s]*dword"
+				}
+			]
+		},
+		"struct": {
+			"patterns": [
+				{
+					"name": "entity.name.class",
+					"match": "\\s[A-Za-z_][A-Za-z_0-9]*"
+				},
+				{
+					"name":"entity.name",
+					"match": "\\s[\\s]*[A-Za-z_][A-Za-z_0-9]*\\s"
 				}
 			]
 		}

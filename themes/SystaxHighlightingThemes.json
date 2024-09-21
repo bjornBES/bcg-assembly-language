@@ -1,0 +1,61 @@
+{
+    "name": "Custom Syntax Colors",
+    "colors": {
+        "editor.background": "#1e1e1e"
+    },
+    "semanticHighlighting": true,
+    "semanticTokenColors": {
+        "number.readonly:acl": {
+            "foreground": "#B5CEA8",
+            "fontStyle": {}
+        },
+        "string.readonly": {
+            "foreground": "#CE9178",
+            "fontStyle": {}
+        },
+        "label.declaration": {
+            "foreground": "#CCCCCC",
+            "fontStyle": {}
+        },
+        "variable.declaration": {
+            "foreground": "#CCCCCC",
+            "fontStyle": {}
+        },
+        "operator.declaration": {
+            "foreground": "#569CD6",
+            "fontStyle": {}
+        }
+    },
+    "tokenColors": [
+        {
+            "scope": "comment",
+            "settings": {
+                "foreground": "#6A9955"
+            }
+        },
+        {
+            "scope":"operator",
+            "settings": {
+                "foreground": "#569CD6"
+            }
+        },
+        {
+            "scope":"property",
+            "settings": {
+                "foreground": "#569CD6"
+            }
+        },
+        {
+            "scope": "variable",
+            "settings": {
+                "foreground": "#569CD6"
+            }
+        },
+        {
+            "scope": "keyword",
+            "settings": {
+                "foreground": "#C586C0"
+            }
+        }
+    ]
+}

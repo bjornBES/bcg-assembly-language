@@ -4,19 +4,23 @@
   "description": "This is the README for your extension \"bgc-assembly-language\". After writing up a brief description, we recommend including the following sections.",
   "version": "0.0.1",
   "publisher": "BjornBEs",
+  "keywords": [],
+  "author": "BjornBEs",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.90.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/bjornBES/BGC-Assembly-language.git"
+    "url": "https://github.com/bjornBES/bcg-assembly-language.git"
   },
   "categories": [
-    "Programming Languages"
+    "Programming Languages",
+    "Visualization"
   ],
-  "main": "src/extension.ts",
+  "main": "./out/extension.js",
   "contributes": {
-    "commands":[
+    "commands": [
       {
         "command": "extension.helloWorld",
         "title": "HelloWorld"
@@ -35,30 +39,45 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "grammars": [
+    "semanticTokenScopes": [
       {
         "language": "acl",
-        "scopeName": "source.acl",
-        "path": "./syntaxes/acl.tmLanguage.json"
+        "scopes": {
+          "number.readonly": [
+            "constant.numeric"
+          ],
+          "function.declaration": [
+            "entity.name.function.declaration"
+          ],
+          "comment": [
+            "comment.line"
+          ],
+          "string.readonly": [
+            "string.quoted.double"
+          ],
+          "variable": [
+            "variable.other"
+          ]
+        }
       }
-    ]
+    ],
+    "themes": [
+      {
+        "uiTheme": "vs-dark",
+        "path": "./themes/SystaxHighlightingThemes.json",
+        "id": "Custom Syntax Colors"
+      }
+    ],
+    "configurationDefaults": {
+      "[acl]": {
+        "editor.semanticHighlighting.enabled": true
+      }
+    }
   },
   "devDependencies": {
-    "@types/glob": "^8.1.0",
-    "@types/mocha": "^10.0.1",
-    "@types/node": "^16.18.98",
-    "@types/vscode": "^1.90.0",
-    "@typescript-eslint/eslint-plugin": "^5.14.0",
-    "@typescript-eslint/parser": "^5.14.0",
-    "@vscode/test-electron": "^2.3.8",
-    "esbuild": "^0.17.19",
-    "eslint": "^8.41.0",
-    "glob": "^10.2.6",
-    "mocha": "^10.2.0",
-    "rimraf": "^5.0.1",
-    "run-script-os": "^1.1.6",
-    "typescript": "^4.9.5",
-    "vscode-test": "^1.5.1"
+    "@types/node": "^14.14.31",
+    "@types/vscode": "~1.88.0",
+    "typescript": "~4.1.5"
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
@@ -66,7 +85,7 @@
     "watch": "tsc -watch -p ./",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "BjornBEs",
-  "license": "MIT"
+  "dependencies": {
+    "glob": "^10.4.2"
+  }
 }
