@@ -81,6 +81,7 @@ class ASMCompletionProposer {
     }
     provideCompletionItems(document, position, token, context) {
         this.output = [];
+        GlobalVariabels_1.GetSymbolsFrom(document, true);
         const Line = document.lineAt(position.line).text;
         const CurrentLine = Line.trim();
         const firstchar = CurrentLine[0];
@@ -122,10 +123,10 @@ class ASMCompletionProposer {
             this.CodeCompletionRegister(currentchar.toUpperCase());
         }
         else {
-            this.NewItem("AX", vscode.CompletionItemKind.Field, "16 bit register", "AX");
-            this.NewItem("BX", vscode.CompletionItemKind.Field, "16 bit register", "BX");
-            this.NewItem("CX", vscode.CompletionItemKind.Field, "16 bit register", "CX");
-            this.NewItem("DX", vscode.CompletionItemKind.Field, "16 bit register", "DX");
+            this.NewItem("AX", vscode.CompletionItemKind.Field, "23 bit register", "AX");
+            this.NewItem("BX", vscode.CompletionItemKind.Field, "23 bit register", "BX");
+            this.NewItem("CX", vscode.CompletionItemKind.Field, "23 bit register", "CX");
+            this.NewItem("DX", vscode.CompletionItemKind.Field, "23 bit register", "DX");
             this.NewItem("[HL]", vscode.CompletionItemKind.Field, "32 bit register addressed", "[HL]");
         }
         return this.output;
@@ -141,7 +142,7 @@ class ASMCompletionProposer {
     CodeCompletionLabels() {
         for (let index = 0; index < GlobalVariabels_1.Labels.length; index++) {
             const element = GlobalVariabels_1.Labels[index];
-            this.NewItem(element, vscode.CompletionItemKind.Field, "", element);
+            this.NewItem(element.name, vscode.CompletionItemKind.Field, "", element.name);
         }
         for (let index = 0; index < GlobalVariabels_1.Variabels.length; index++) {
             const element = GlobalVariabels_1.Variabels[index];
@@ -160,6 +161,7 @@ class ASMCompletionProposer {
         }
         else if (CurrentLine.startsWith("B")) {
             this.NewItem("BP", vscode.CompletionItemKind.Field, "base pointer", "BP");
+            this.NewItem("BPX", vscode.CompletionItemKind.Field, "base pointer", "BPX");
             this.NewItem("BX", vscode.CompletionItemKind.Field, "16 bit register", "BX");
             this.NewItem("BL", vscode.CompletionItemKind.Field, "the low 8 bits part of BX", "BL");
             this.NewItem("BH", vscode.CompletionItemKind.Field, "the high 8 bits part of BX", "BH");
@@ -178,11 +180,8 @@ class ASMCompletionProposer {
         else if (CurrentLine.startsWith("F")) {
             this.NewItem("FA", vscode.CompletionItemKind.Field, "32 bit float register", "FA");
             this.NewItem("FB", vscode.CompletionItemKind.Field, "32 bit float register", "FB");
-            this.NewItem("F1", vscode.CompletionItemKind.Field, "32 bit float register", "F1");
-            this.NewItem("F2", vscode.CompletionItemKind.Field, "32 bit float register", "F2");
-            this.NewItem("F3", vscode.CompletionItemKind.Field, "32 bit float register", "F3");
-            this.NewItem("F4", vscode.CompletionItemKind.Field, "32 bit float register", "F4");
-            this.NewItem("FDS", vscode.CompletionItemKind.Field, "16 bit segment file register", "FDS");
+            this.NewItem("FC", vscode.CompletionItemKind.Field, "32 bit float register", "FC");
+            this.NewItem("FD", vscode.CompletionItemKind.Field, "32 bit float register", "FD");
             this.NewItem("F", vscode.CompletionItemKind.Field, "flags", "F");
         }
         else if (CurrentLine.startsWith("H")) {
@@ -190,18 +189,14 @@ class ASMCompletionProposer {
             this.NewItem("H", vscode.CompletionItemKind.Field, "the high 16 bits part of HL", "H");
         }
         else if (CurrentLine.startsWith("I")) {
-            this.NewItem("IL", vscode.CompletionItemKind.Field, "8 bit interrupt location register", "IR");
         }
         else if (CurrentLine.startsWith("L")) {
             this.NewItem("L", vscode.CompletionItemKind.Field, "the low 16 bits part of HL", "L");
         }
         else if (CurrentLine.startsWith("M")) {
-            this.NewItem("MB", vscode.CompletionItemKind.Field, "4 bit memory bank", "MB");
         }
         else if (CurrentLine.startsWith("P")) {
             this.NewItem("PC", vscode.CompletionItemKind.Field, "program Counter", "PC");
-            this.NewItem("PCL", vscode.CompletionItemKind.Field, "the low 16 bits part of PC", "PCL");
-            this.NewItem("PCH", vscode.CompletionItemKind.Field, "the high 16 bits part of PC", "PCH");
         }
         else if (CurrentLine.startsWith("R")) {
             this.NewItem("R1", vscode.CompletionItemKind.Field, "16 bit register", "R1");
@@ -210,8 +205,9 @@ class ASMCompletionProposer {
             this.NewItem("R4", vscode.CompletionItemKind.Field, "16 bit register", "R4");
         }
         else if (CurrentLine.startsWith("S")) {
-            this.NewItem("S", vscode.CompletionItemKind.Field, "16 bit segment register", "S");
+            this.NewItem("SS", vscode.CompletionItemKind.Field, "16 bit stack segment register", "SS");
             this.NewItem("SP", vscode.CompletionItemKind.Field, "stack pointer", "SP");
+            this.NewItem("SPX", vscode.CompletionItemKind.Field, "stack pointer", "SPX");
         }
     }
     CodeCompletionInstructions(CurrentLine) {

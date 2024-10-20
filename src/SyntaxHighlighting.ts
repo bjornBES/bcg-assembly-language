@@ -3,7 +3,7 @@ import * as GlobalVar from './GlobalVariabels';
 
 export const legend = new vscode.SemanticTokensLegend(
     ['string', 'number', 'comment', 'function', 'label', 'directive', 'variable', 'operator', 'property', 'keyword'],
-    ['declaration', 'documentation', 'readonly']
+    ['declaration', 'documentation', 'readonly', 'register', 'address', 'addressPointer']
 );
 
 
@@ -21,6 +21,7 @@ export class ASMSyntaxHighlighting implements vscode.DocumentSemanticTokensProvi
         let DoneInstructions = false;
 
         for (let line = 0; line < document.lineCount; line++) {
+            let LineElement = document.lineAt(line).text;
             let text = document.lineAt(line).text;
 
             if (text == "") {
@@ -28,14 +29,28 @@ export class ASMSyntaxHighlighting implements vscode.DocumentSemanticTokensProvi
             }
 
             //  Highlight "comment"
-            if (TestMatch(text, line, /^\;.*/, builder, "comment", [])) {
+            if (TestMatch(text, line, /^\;.+/, builder, "comment", [])) {
                 continue;
             }
-            TestMatch(text, line, /\;.*/, builder, "comment", [])
+            TestMatch(text, line, /\;.+/, builder, "comment", [])
 
             //debugger
             // Highlight directives
             TestMatch(text, line, /[\s]*\.\b(byte|word|tbyte|dword|db|dw|dt|dd)/, builder, "variable", []);
+            
+            // Highlight res
+            TestMatch(text, line, /[\s]*\.\b(res|resb|resw|rest|resd|resq)/, builder, "variable", []);
+
+            // Highlight sections
+            if (TestMatch(text, line, /[\s]*\.\b(section)/, builder, "variable", [])) {
+                continue;
+            }
+
+            // Highlight set cpu
+            TestMatch(text, line, /[\s]*\.\b(setcpu)/, builder, "variable", [])
+
+            // Highlight org
+            TestMatch(text, line, /[\s]*\.\b(org)/, builder, "variable", [])
 
             //debugger
             // Highlight global
@@ -53,46 +68,72 @@ export class ASMSyntaxHighlighting implements vscode.DocumentSemanticTokensProvi
 
             DoneInstructions = false;
 
-            for (let i = 0; i < 3; i++) {
+            //debugger
+            // Highlight declaration Variables
+            text = TestMatchRef(text, line, /[\s]*\$[A-Za-z_][A-Za-z_\d]*/, builder, "variable", ["declaration"]);
+
+            // Highlight number
+            text = TestMatchRef(text, line, /\b(0b[0-1][0-1_]*|0x[\dA-Fa-f][\dA-Fa-f_]*|[\d][\d_]*)/, builder, "number", ["readonly"]);
+
+            //debugger
+            // Highlight quoted text as a string
+            text = TestMatchRef(text, line, /"(.*?)"/, builder, "string", ["readonly"]);
+
+            //debugger
+            // Highlight declaration operator
+            text = TestMatchRef(text, line, /\b(\=)/, builder, "operator", ["declaration"]);
+
+            //debugger
+            // Highlight operator
+            text = TestMatchRef(text, line, /\b(\+|\-|\*|\/)/, builder, "operator", []);
+
+            //debugger
+            // Highlight Instructions
+            if (DoneInstructions == false) {
+                let SaveText = text;
+                let InstructionsRegExp: RegExp = /^[\s]*[A-Za-z]+/;
+                text = TestMatchRef(text, line, InstructionsRegExp, builder, "keyword", []);
+
+                if (SaveText != text) {
+                    DoneInstructions = true;
+                }
+            }
+
+            let argumentLine = text.replace(/\;.+/, "").replace(/[\s]+\,/g, ",").replace(/\s+/g, " ").trim();
+            let arguemnts = argumentLine.trim().split(',');
+
+            for (let arg = 0; arg < arguemnts.length; arg++) {
+                let element = arguemnts[arg];
+                let index = LineElement.indexOf(element);
+
                 //debugger
                 // Highlight numbers
-                text = TestMatchRef(text, line, /\b(0b[0-1][0-1_]*|0x[\dA-Fa-f][\dA-Fa-f_]*|[\d][\d_]*)/, builder, "number", ["readonly"]);
+                if (element.includes('@')) {
+                    element = TestMatchLineRef(element, line, index, /[\s]*\b(HIGH|LOW)\s/, builder, "property", [])
+                    index = LineElement.indexOf(element);
 
-                //debugger
-                // Highlight quoted text as a string
-                text = TestMatchRef(text, line, /"(.*?)"/, builder, "string", ["readonly"]);
+                    element = TestMatchLineRef(element, line, index, /[\s]*\b(near|short|long|far)\s/, builder, "property", []);
+                    index = LineElement.indexOf(element);
 
-
-                //debugger
-                // Highlight declaration Variables
-                text = TestMatchRef(text, line, /[\s]*\$[A-Za-z_][A-Za-z_\d]*/, builder, "variable", ["declaration"]);
-
-                //debugger
-                // Highlight declaration operator
-                text = TestMatchRef(text, line, /\b(\=)/, builder, "operator", ["declaration"]);
-
-                //debugger
-                // Highlight operator
-                text = TestMatchRef(text, line, /\b(\+|\-|\*|\/)/, builder, "operator", []);
-
-                //debugger
-                // Highlight Instructions
-                if (DoneInstructions == false) {
-                    let SaveText = text;
-                    let InstructionsRegExp: RegExp = /^[\s]*[A-Za-z]+/;
-                    text = TestMatchRef(text, line, InstructionsRegExp, builder, "keyword", []);
-
-                    if (SaveText != text) {
-                        DoneInstructions = true;
+                    if (TestMatchLine(element, line, index, /[\s]*\@[A-Za-z_][A-Za-z_\d]+/, builder, "property", ["addressPointer"])) {
+                        continue;
                     }
                 }
+                else if (element.includes('[') && element.endsWith(']')) {
+                    element = TestMatchLineRef(element, line, index, /[\s]*\b(rel)[\s]*/, builder, "property", []);
+                    element = element.replace('[', "").replace("]", "").trim();
 
-                //debugger
-                // Highlight registers
-                let RegisterRegExp: RegExp = /^[\s]*\b(EXAB|EXCD|SPX|BPX|CR0|CR1|DS|CS|SS|HL|PC|FA|FB|IL|R1|R2|MB|a|b|c|d|h|l|s|f|exab|excd|spx|bpx|cr0|cr1|ds|cs|ss|hl|pc|fa|fb|il|r1|r2|mb|a|b|c|d|h|l|s|f)/;
-                text = TestMatchRef(text, line, RegisterRegExp, builder, "property", []);
-
-                //debugger
+                    index = LineElement.indexOf(element);
+                    if (TestMatchLine(element, line, index, /[\s]*[A-Za-z_][A-Za-z_\d]*/, builder, "property", ["address"])) {
+                        continue;
+                    }
+                }
+                else if (TestMatchLine(element, line, index, /\b(0b[0-1][0-1_]*|0x[\dA-Fa-f][\dA-Fa-f_]*|[\d][\d_]*)/, builder, "number", ["readonly"])) {
+                    continue;
+                }
+                else if (TestMatchLine(element, line, index, /[\s]*[A-Za-z][A-Za-z\d]*[\s]*/, builder, "property", ["register"])) {
+                    continue;
+                }
             }
         }
 
@@ -161,6 +202,32 @@ function TestMatch(
     return false;
 }
 
+function TestMatchLine(
+    text: string,
+    line: number,
+    indexChar: number,
+    Keyword: RegExp,
+    builder: vscode.SemanticTokensBuilder,
+    tokenType: string,
+    tokenModifier: string[]): boolean {
+    const Index = text.match(Keyword);
+    if (Index) {
+        const start = Index.index || 0;
+        const length = Index[0].length;
+        var range: vscode.Range = new vscode.Range(line, indexChar, line, indexChar + length);
+
+        if (tokenModifier.length == 0) {
+            builder.push(range, tokenType, []);
+            return true;
+        }
+        else {
+            builder.push(range, tokenType, tokenModifier);
+            return true;
+        }
+    }
+    return false;
+}
+
 function TestMatchRef(
     text: string,
     line: number,
@@ -173,6 +240,31 @@ function TestMatchRef(
         const start = Index.index || 0;
         const length = Index[0].length;
         var range: vscode.Range = new vscode.Range(line, start, line, start + length);
+
+        if (tokenModifier.length == 0) {
+            builder.push(range, tokenType, []);
+            return text.replace(Index[0], "");
+        }
+        else {
+            builder.push(range, tokenType, tokenModifier);
+            return text.replace(Index[0], "");
+        }
+    }
+    return text;
+}
+
+function TestMatchLineRef(
+    text: string,
+    line: number,
+    index: number,
+    Keyword: RegExp,
+    builder: vscode.SemanticTokensBuilder,
+    tokenType: string,
+    tokenModifier: string[]): string {
+    const Index = text.match(Keyword);
+    if (Index) {
+        const length = Index[0].length;
+        var range: vscode.Range = new vscode.Range(line, index, line, index + length);
 
         if (tokenModifier.length == 0) {
             builder.push(range, tokenType, []);

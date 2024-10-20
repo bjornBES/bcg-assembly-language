@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { ASMHoverProvider } from './hover';
 import { ASMCompletionProposer } from './completionProposer';
 import { ASMSyntaxHighlighting, legend } from './SyntaxHighlighting'
+import { ASMDocumentSymbolProvider } from './SymbolProvider'
 import * as GlobalShit from './GlobalVariabels';
 import path from 'node:path';
 import * as glob from 'glob';
@@ -25,12 +26,13 @@ export function activate(context: vscode.ExtensionContext) {
     }))
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
-        GlobalShit.GetSymbols(document);
+        GlobalShit.GetSymbolsFrom(document, false);
     }));
 
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, new ASMHoverProvider()));
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(selector, new ASMCompletionProposer(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(), ".", "[", "&"))
     context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new ASMSyntaxHighlighting(), legend));
+    //context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, new ASMDocumentSymbolProvider()));
 
 }
 

@@ -43,11 +43,12 @@ function activate(context) {
     }));
     context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
         const document = event.document;
-        GlobalShit.GetSymbols(document);
+        GlobalShit.GetSymbolsFrom(document, false);
     }));
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, new hover_1.ASMHoverProvider()));
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(selector, new completionProposer_1.ASMCompletionProposer(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(), ".", "[", "&"));
     context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new SyntaxHighlighting_1.ASMSyntaxHighlighting(), SyntaxHighlighting_1.legend));
+    //context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, new ASMDocumentSymbolProvider()));
 }
 exports.activate = activate;
 function deactivate() {

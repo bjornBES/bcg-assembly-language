@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { FilePaths, GlobalLabels, Labels, Variabels, Instructions, URIS} from './GlobalVariabels';
+import { FilePaths, GlobalLabels, Labels, Variabels, Instructions, URIS, GetSymbolsFrom} from './GlobalVariabels';
 
 export class ASMCompletionProposer implements vscode.CompletionItemProvider {
     instructionItems: vscode.CompletionItem[];
@@ -69,6 +69,8 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
     provideCompletionItems(document: vscode.TextDocument, position: vscode.Position, token: vscode.CancellationToken, context: vscode.CompletionContext): vscode.ProviderResult<vscode.CompletionItem[] | vscode.CompletionList> {
         this.output = []
 
+        GetSymbolsFrom(document, true);
+
         const Line: string = document.lineAt(position.line).text;
         const CurrentLine: string = Line.trim();
 
@@ -120,10 +122,10 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             this.CodeCompletionRegister(currentchar.toUpperCase());
         }
         else {
-            this.NewItem("AX", vscode.CompletionItemKind.Field, "16 bit register", "AX");
-            this.NewItem("BX", vscode.CompletionItemKind.Field, "16 bit register", "BX");
-            this.NewItem("CX", vscode.CompletionItemKind.Field, "16 bit register", "CX");
-            this.NewItem("DX", vscode.CompletionItemKind.Field, "16 bit register", "DX");
+            this.NewItem("AX", vscode.CompletionItemKind.Field, "23 bit register", "AX");
+            this.NewItem("BX", vscode.CompletionItemKind.Field, "23 bit register", "BX");
+            this.NewItem("CX", vscode.CompletionItemKind.Field, "23 bit register", "CX");
+            this.NewItem("DX", vscode.CompletionItemKind.Field, "23 bit register", "DX");
             this.NewItem("[HL]", vscode.CompletionItemKind.Field, "32 bit register addressed", "[HL]");
         }
 
@@ -142,7 +144,7 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
     CodeCompletionLabels() {
         for (let index = 0; index < Labels.length; index++) {
             const element = Labels[index];
-            this.NewItem(element, vscode.CompletionItemKind.Field, "", element);
+            this.NewItem(element.name, vscode.CompletionItemKind.Field, "", element.name);
         }
         for (let index = 0; index < Variabels.length; index++) {
             const element = Variabels[index];
@@ -162,6 +164,7 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
         }
         else if (CurrentLine.startsWith("B")) {
             this.NewItem("BP", vscode.CompletionItemKind.Field, "base pointer", "BP");
+            this.NewItem("BPX", vscode.CompletionItemKind.Field, "base pointer", "BPX");
             this.NewItem("BX", vscode.CompletionItemKind.Field, "16 bit register", "BX");
             this.NewItem("BL", vscode.CompletionItemKind.Field, "the low 8 bits part of BX", "BL");
             this.NewItem("BH", vscode.CompletionItemKind.Field, "the high 8 bits part of BX", "BH");
@@ -180,11 +183,8 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
         else if (CurrentLine.startsWith("F")) {
             this.NewItem("FA", vscode.CompletionItemKind.Field, "32 bit float register", "FA");
             this.NewItem("FB", vscode.CompletionItemKind.Field, "32 bit float register", "FB");
-            this.NewItem("F1", vscode.CompletionItemKind.Field, "32 bit float register", "F1");
-            this.NewItem("F2", vscode.CompletionItemKind.Field, "32 bit float register", "F2");
-            this.NewItem("F3", vscode.CompletionItemKind.Field, "32 bit float register", "F3");
-            this.NewItem("F4", vscode.CompletionItemKind.Field, "32 bit float register", "F4");
-            this.NewItem("FDS", vscode.CompletionItemKind.Field, "16 bit segment file register", "FDS");
+            this.NewItem("FC", vscode.CompletionItemKind.Field, "32 bit float register", "FC");
+            this.NewItem("FD", vscode.CompletionItemKind.Field, "32 bit float register", "FD");
             this.NewItem("F", vscode.CompletionItemKind.Field, "flags", "F");
         }
         else if (CurrentLine.startsWith("H")) {
@@ -192,18 +192,14 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             this.NewItem("H", vscode.CompletionItemKind.Field, "the high 16 bits part of HL", "H");
         }
         else if (CurrentLine.startsWith("I")) {
-            this.NewItem("IL", vscode.CompletionItemKind.Field, "8 bit interrupt location register", "IR");
         }
         else if (CurrentLine.startsWith("L")) {
             this.NewItem("L", vscode.CompletionItemKind.Field, "the low 16 bits part of HL", "L");
         }
         else if (CurrentLine.startsWith("M")) {
-            this.NewItem("MB", vscode.CompletionItemKind.Field, "4 bit memory bank", "MB");
         }
         else if (CurrentLine.startsWith("P")) {
             this.NewItem("PC", vscode.CompletionItemKind.Field, "program Counter", "PC");
-            this.NewItem("PCL", vscode.CompletionItemKind.Field, "the low 16 bits part of PC", "PCL");
-            this.NewItem("PCH", vscode.CompletionItemKind.Field, "the high 16 bits part of PC", "PCH");
         }
         else if (CurrentLine.startsWith("R")) {
             this.NewItem("R1", vscode.CompletionItemKind.Field, "16 bit register", "R1");
@@ -212,8 +208,9 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             this.NewItem("R4", vscode.CompletionItemKind.Field, "16 bit register", "R4");
         }
         else if (CurrentLine.startsWith("S")) {
-            this.NewItem("S", vscode.CompletionItemKind.Field, "16 bit segment register", "S");
+            this.NewItem("SS", vscode.CompletionItemKind.Field, "16 bit stack segment register", "SS");
             this.NewItem("SP", vscode.CompletionItemKind.Field, "stack pointer", "SP");
+            this.NewItem("SPX", vscode.CompletionItemKind.Field, "stack pointer", "SPX");
         }
     }
 

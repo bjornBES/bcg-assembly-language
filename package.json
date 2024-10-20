@@ -1,8 +1,8 @@
 {
   "name": "bgc-assembly-language",
   "displayName": "BGC Assembly language",
-  "description": "This is the README for your extension \"bgc-assembly-language\". After writing up a brief description, we recommend including the following sections.",
-  "version": "0.0.1",
+  "description": "This is the extension for the \"bgc-assembly-language\".",
+  "version": "1.0.0",
   "publisher": "BjornBEs",
   "keywords": [],
   "author": "BjornBEs",

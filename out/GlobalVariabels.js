@@ -19,7 +19,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.GetRegister = exports.GetInstructions = exports.Registers = exports.Instructions = exports.GetSymbols = exports.URIS = exports.FilePaths = exports.GlobalLabels = exports.Labels = exports.Variabels = exports.RegisterTooltipFilePath = exports.InstructionTooltipFilePath = void 0;
+exports.GetRegister = exports.GetInstructions = exports.Registers = exports.Instructions = exports.Label = exports.GetDocumentSymbol = exports.GetSymbol = exports.GetSymbolsFrom = exports.GetSymbols = exports.URIS = exports.FilePaths = exports.NewLine = exports.GlobalLabels = exports.Labels = exports.Variabels = exports.RegisterTooltipFilePath = exports.InstructionTooltipFilePath = void 0;
 const vscode = __importStar(require("vscode"));
 const fs = __importStar(require("node:fs"));
 let basePath = "C:/Users/bjorn/Desktop/VideoProjects/GamingCPU_Project/languages/assembly/bcg-assembly-language";
@@ -28,35 +28,76 @@ exports.RegisterTooltipFilePath = basePath + "/files/TooltipsRegister.md";
 exports.Variabels = [];
 exports.Labels = [];
 exports.GlobalLabels = [];
+exports.NewLine = vscode.window.activeTextEditor?.document.eol === vscode.EndOfLine.LF ? "\n" : "\r\n";
 exports.FilePaths = [];
 exports.URIS = new Set();
-function GetSymbols(document) {
+function GetSymbols() {
     exports.Variabels = [];
     exports.Labels = [];
     exports.GlobalLabels = [];
     for (let docIndex = 0; docIndex < exports.FilePaths.length; docIndex++) {
         const doc = exports.FilePaths[docIndex];
-        for (let i = 0; i < doc.lineCount; i++) {
-            const line = doc.lineAt(i).text.replace(/[\s]*\;\s/, "");
-            if (line.trim().startsWith('$') && doc.uri === document.uri) {
-                if (exports.Variabels.includes(line) === false) {
-                    exports.Variabels.push(line.replace('$', '').split(' ', 2)[0]);
-                }
-            }
-            if (line.trim().endsWith(':') && line.trim().toLowerCase().startsWith(".global")) {
-                if (exports.GlobalLabels.includes(line.trim()) === false) {
-                    exports.GlobalLabels.push(line.split(' ')[1].replace(":", ""));
-                }
-            }
-            else if (line.trim().endsWith(':') && doc.uri === document.uri) {
-                if (exports.Labels.includes(line.trim()) === false) {
-                    exports.Labels.push(line.replace(':', '').split(' ')[0].trimStart());
-                }
-            }
-        }
+        GetSymbolsFrom(doc, false);
     }
 }
 exports.GetSymbols = GetSymbols;
+function GetSymbolsFrom(document, emptyOut) {
+    if (emptyOut == true) {
+        exports.Variabels = [];
+        exports.Labels = [];
+        exports.GlobalLabels = [];
+    }
+    for (let i = 0; i < document.lineCount; i++) {
+        const line = document.lineAt(i).text.replace(/[\s]*\;.+/, "").replace(/[\s]+/, " ");
+        if (line.includes(":")) {
+            let element = line.replace(":", "");
+            let columnumber = document.lineAt(i).text.indexOf(element);
+            exports.Labels.push(new Label(i, columnumber, element, document, document.lineAt(i).text));
+        }
+    }
+}
+exports.GetSymbolsFrom = GetSymbolsFrom;
+function GetSymbol(name, document) {
+    let symbol = undefined;
+    GetSymbolsFrom(document, false);
+    for (let index = 0; index < exports.Labels.length; index++) {
+        const element = exports.Labels[index];
+        if (element.name == name) {
+            symbol = element;
+            break;
+        }
+    }
+    if (symbol == null) {
+        return undefined;
+    }
+    let range = new vscode.Range(symbol.linenumber, symbol.columnumber, symbol.linenumber, symbol.columnumber + symbol.name.length);
+    let selectionRange = new vscode.Range(symbol.linenumber, symbol.columnumber, symbol.linenumber, symbol.columnumber + symbol.line.length - 1);
+    let result = new vscode.DocumentSymbol(name, "", vscode.SymbolKind.Function, range, selectionRange);
+    return result;
+}
+exports.GetSymbol = GetSymbol;
+function GetDocumentSymbol(document) {
+    let result = [];
+    GetSymbolsFrom(document, false);
+    for (let index = 0; index < exports.Labels.length; index++) {
+        const element = exports.Labels[index];
+        let range = new vscode.Range(element.linenumber, element.columnumber, element.linenumber, element.columnumber + element.name.length);
+        let selectionRange = new vscode.Range(element.linenumber, element.columnumber, element.linenumber, element.columnumber + element.line.length - 1);
+        result.push(new vscode.SymbolInformation(element.name, vscode.SymbolKind.Function, range, document.uri));
+    }
+    return result;
+}
+exports.GetDocumentSymbol = GetDocumentSymbol;
+class Label {
+    constructor(linenum, columnum, _name, _file, line) {
+        this.linenumber = linenum;
+        this.columnumber = columnum;
+        this.file = _file;
+        this.name = _name;
+        this.line = line;
+    }
+}
+exports.Label = Label;
 exports.Instructions = [""];
 exports.Registers = [""];
 function GetInstructions() {

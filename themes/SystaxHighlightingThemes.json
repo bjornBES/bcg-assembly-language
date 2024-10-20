@@ -24,6 +24,21 @@
         "operator.declaration": {
             "foreground": "#569CD6",
             "fontStyle": {}
+        },
+        "property.register":
+        {
+            "foreground": "#569CD6",
+            "fontStyle": {}
+        },
+        "property.address":
+        {
+            "foreground": "#569CD6",
+            "fontStyle": {}
+        },        
+        "property.addressPointer":
+        {
+            "foreground": "#569CD6",
+            "fontStyle": {}
         }
     },
     "tokenColors": [
