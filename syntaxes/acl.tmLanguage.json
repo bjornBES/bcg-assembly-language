@@ -16,12 +16,7 @@
 				{
 					"name": "keyword.control.ACL",
 					"comment": "BGC instructions upper",
-					"match": "^[\\s]*\\b(MOV[A-Z]|MOV)\\s"
-				},
-				{
-					"name": "keyword.control.ACL",
-					"comment": "BGC instructions lower",
-					"match": "^[\\s]*\\b(mov[a-z]|mov)\\s"
+					"match": "^[\\s]*[A-Za-z]+"
 				},
 				{
 					"name": "variable.name",
@@ -41,7 +36,7 @@
 				},
 				{
 					"name": "comment.line.simicolon",
-					"match": "[\\s]*;\\s.*"
+					"match": "[\\s]*;.*"
 				}
 			]
 		},
@@ -65,29 +60,44 @@
 		"directives": {
 			"patterns": [
 				{
-					"name": "storage.modifier.byte.ACL",
+					"name": "keyword.control.directive.byte.ACL",
 					"match": "[\\s]*\\.\\b(byte|db)"
 				},
 				{
-					"name": "storage.modifier.word.ACL",
+					"name": "keyword.control.directive.word.ACL",
 					"match": "[\\s]*\\.\\b(word|dw)"
 				},
 				{
-					"name": "storage.modifier.tbyte.ACL",
+					"name": "keyword.control.directive.tbyte.ACL",
 					"match": "[\\s]*\\.\\b(tbyte|dt)"
 				},
 				{
-					"name": "storage.modifier.dword.ACL",
+					"name": "keyword.control.directive.dword.ACL",
 					"match": "[\\s]*\\.\\b(dword|dd)"
 				},
 				{
 					"name": "keyword.control.directive.section",
-					"match": "[\\s]*\\.\\b(section|SECTION)\\b\\s\\b(DATA|TEXT|HEADER)\\b"
+					"match": "[\\s]*\\.\\b(section|SECTION)\\b"
 				},
 				{
-					"name": "storage.modifier.visibility",
+					"name": "keyword.control.directive",
 					"comment": "global",
-					"match": "^[\\s]*\\.\\b(global|GLOBAL)\\s[A-Za-z_]*:"
+					"match": "^[\\s]*\\.\\b(global|GLOBAL)\\s[A-Za-z_][A-Za-z_\\d]*"
+				},
+				{
+					"name": "keyword.control.directive",
+					"comment": "local",
+					"match": "^[\\s]*\\.\\b(local|LOCAL)\\s[A-Za-z_][A-Za-z_\\d]*"
+				},
+				{
+					"name": "keyword.control.directive",
+					"comment": "setcpu",
+					"match": "^[\\s]*\\.\\b(setcpu|SETCPU)"
+				},
+				{
+					"name": "keyword.control.directive",
+					"comment": "extern",
+					"match": "^[\\s]*\\.\\b(extern|EXTERN)"
 				},
 				{
 					"name": "keyword.control.directive.includeil",
@@ -109,26 +119,14 @@
 				},
 				{
 					"name": "keyword.control.directive.endStruct",
-					"match": "^\\.EndStruct"
+					"match": "^\\.endstruct"
 				},
 				{
-					"name": "storage.modifier.byte.ACL",
-					"match": "[\\s]*\\.\\b(resbyte|RESBYTE)"
+					"name": "keyword.control.directive.ACL",
+					"match": "[\\s]*\\.\\b(res.|RES.)"
 				},
 				{
-					"name": "storage.modifier.word.ACL",
-					"match": "[\\s]*\\.\\b(resword|RESWORD)"
-				},
-				{
-					"name": "storage.modifier.tbyte.ACL",
-					"match": "[\\s]*\\.\\b(restbyte|RESTBYTE)"
-				},
-				{
-					"name": "storage.modifier.dword.ACL",
-					"match": "[\\s]*\\.\\b(resdword|RESDWORD)"
-				},
-				{
-					"name": "storage.modifier.res.ACL",
+					"name": "keyword.control.directive.res.ACL",
 					"match": "[\\s]*\\.\\b(res|RES)"
 				}
 			]
@@ -138,17 +136,22 @@
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL register name",
-					"match": "[\\s]*\\b(pc[h-l]|f|il|sp|bp|r[1-4]|f[1-4]|s|ds|mb|PC[H-L]|F|IL|SP|BP|R[1-4]|F[1-4]|S|DS|MB)\\b"
+					"match": "[\\s,]*\\b(pc|cr0|f|r[1-16]||PC|CR0|F|R[1-16])\\b[\\s,]"
 				},
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL GP register name",
-					"match": "[\\s]*\\b(a[a-z]|b[a-z]|c[a-z]|d[a-z]|a|b|c|d|hl|h|l|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|A|B|C|D|HL|H|L)\\b"
+					"match": "[\\s,]*\\b(a[a-z]|b[a-z]|c[a-z]|d[a-z]|a|b|c|d|hl|h|l|A[A-Z]|B[A-Z]|C[A-Z]|D[A-Z]|A|B|C|D|HL|H|L)\\b[\\s,]"
 				},
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL Stack register name",
-					"match": "[\\s]*\\b(bpx|bp|spx|sp|BPX|BP|SPX|SP)\\b"
+					"match": "[\\s,]*\\b(bpx|bp|spx|sp|BPX|BP|SPX|SP)\\b[\\s,]"
+				},
+				{
+					"name": "variable.language.ACL",
+					"comment": "ACL segment register name",
+					"match": "[\\s,]*\\b([A-Z]S|[a-z]s)\\b[\\s,]"
 				},
 				{
 					"comment": "for Paths and shit",
@@ -179,50 +182,60 @@
 				},
 				{
 					"comment": "Segment Address [register:register]",
-					"name": "variable.parameter.segment",
-					"match": "[,\\s]*\\[(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS):(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS)\\]"
+					"name": "variable.language.segment",
+					"match": "[,\\s]*\\[[A-Za-z]+:[A-Za-z]+\\]"
 				},
 				{
-					"comment": "Segment Address [immdiate:register]",
-					"name": "variable.parameter.segment",
-					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*):(a|b|c|d|hl|h|l|sp|bp|s|ds|A|B|C|D|HL|H|L|SP|BP|S|DS)\\]"
+					"comment": "high Address []",
+					"name": "variable.language.high",
+					"match": "[,\\s]*\\b(high|HIGH)"
+				},
+				{
+					"comment": "low Address []",
+					"name": "variable.language.low",
+					"match": "[,\\s]*\\b(low|LOW)"
+				},
+				{
+					"comment": "near Address []",
+					"name": "variable.language.near",
+					"match": "[,\\s]*\\b(near|NEAR)"
+				},
+				{
+					"comment": "short Address []",
+					"name": "variable.language.short",
+					"match": "[,\\s]*\\b(short|SHORT)"
 				},
 				{
 					"comment": "Long Address []",
-					"name": "variable.parameter.long",
-					"match": "[,\\s]*\\b(long|LONG)\\s\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+					"name": "variable.language.long",
+					"match": "[,\\s]*\\b(long|LONG)"
 				},
 				{
 					"comment": "Far Address []",
-					"name": "variable.parameter.far",
-					"match": "[,\\s]*\\b(far|FAR)\\s\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+					"name": "variable.language.far",
+					"match": "[,\\s]*\\b(far|FAR)"
+				},
+				{
+					"comment": "rel Address []",
+					"name": "variable.language.rel",
+					"match": "[,\\s]*\\b(rel|REL)"
 				},
 				{
 					"comment": "Address []",
-					"name": "variable.parameter",
-					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_]*)\\]"
+					"name": "variable.language",
+					"match": "[,\\s]*\\[(0b[10][10_]*|0x[\\h][\\h_]*|\\$[\\h][\\h_]*|[\\d][\\d_]*|[A-Za-z_][A-Za-z_\\d]*)\\]"
 				},
 				{
-					"name": "variable.parameter",
+					"name": "variable.language",
 					"match": "[,\\s]*\\$"
 				},
 				{
-					"name": "variable.parameter.label",
+					"name": "variable.language",
 					"match": "[,\\s]*\\%[A-Za-z_][A-Za-z_0-9]*"
 				},
 				{
-					"name": "variable.parameter.label",
-					"match": "[,\\s]*\\@[A-Za-z_]*"
-				},
-				{
-					"comment": "Long Address []",
-					"name": "variable.parameter.label.long",
-					"match": "[,\\s]*\\b(long|LONG)\\s\\@[A-Za-z_]*"
-				},
-				{
-					"comment": "Far Address []",
-					"name": "variable.parameter.label.far",
-					"match": "[,\\s]*\\b(far|FAR)\\s\\@[A-Za-z_]*"
+					"name": "variable.language",
+					"match": "[,\\s]*\\@[A-Za-z_][A-Za-z_\\d]*"
 				},
 				{
 					"name": "constant.numeric",

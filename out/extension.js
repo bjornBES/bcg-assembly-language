@@ -23,7 +23,6 @@ exports.deactivate = exports.activate = void 0;
 const vscode = __importStar(require("vscode"));
 const hover_1 = require("./hover");
 const completionProposer_1 = require("./completionProposer");
-const SyntaxHighlighting_1 = require("./SyntaxHighlighting");
 const GlobalShit = __importStar(require("./GlobalVariabels"));
 const selector = { language: 'acl', scheme: 'file' };
 function activate(context) {
@@ -47,7 +46,7 @@ function activate(context) {
     }));
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, new hover_1.ASMHoverProvider()));
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(selector, new completionProposer_1.ASMCompletionProposer(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(), ".", "[", "&"));
-    context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new SyntaxHighlighting_1.ASMSyntaxHighlighting(), SyntaxHighlighting_1.legend));
+    //context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new ASMSyntaxHighlighting(), legend));
     //context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, new ASMDocumentSymbolProvider()));
 }
 exports.activate = activate;

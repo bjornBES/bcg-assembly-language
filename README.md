@@ -1,6 +1,6 @@
 # compiledcpulanguage README
 
-This is a extension for the ACL language
+This is an extension for the ACL language for the [BCG cpus](https://github.com/bjornBES/GamingCPU_Project)
 
 ## Features
 
@@ -10,8 +10,15 @@ This is a extension for the ACL language
 
 ## Known Issues
 
+hover does not work
+
 ## Release Notes
 
 ### 1.0.0
 
 Released
+
+### 1.0.1
+
+fixed syntax highlighting
+more code completion things

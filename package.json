@@ -1,8 +1,8 @@
 {
   "name": "bgc-assembly-language",
-  "displayName": "BGC Assembly language",
+  "displayName": "ACL",
   "description": "This is the extension for the \"bgc-assembly-language\".",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "BjornBEs",
   "keywords": [],
   "author": "BjornBEs",
@@ -15,8 +15,7 @@
     "url": "https://github.com/bjornBES/bcg-assembly-language.git"
   },
   "categories": [
-    "Programming Languages",
-    "Visualization"
+    "Programming Languages"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -39,40 +38,13 @@
         "configuration": "./language-configuration.json"
       }
     ],
-    "semanticTokenScopes": [
+    "grammars": [
       {
         "language": "acl",
-        "scopes": {
-          "number.readonly": [
-            "constant.numeric"
-          ],
-          "function.declaration": [
-            "entity.name.function.declaration"
-          ],
-          "comment": [
-            "comment.line"
-          ],
-          "string.readonly": [
-            "string.quoted.double"
-          ],
-          "variable": [
-            "variable.other"
-          ]
-        }
+        "scopeName": "source.acl",
+        "path": "./syntaxes/acl.tmLanguage.json"
       }
-    ],
-    "themes": [
-      {
-        "uiTheme": "vs-dark",
-        "path": "./themes/SystaxHighlightingThemes.json",
-        "id": "Custom Syntax Colors"
-      }
-    ],
-    "configurationDefaults": {
-      "[acl]": {
-        "editor.semanticHighlighting.enabled": true
-      }
-    }
+    ]
   },
   "devDependencies": {
     "@types/node": "^14.14.31",

@@ -2,7 +2,7 @@
 
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { FilePaths, GlobalLabels, Labels, Variabels, Instructions, URIS, GetSymbolsFrom} from './GlobalVariabels';
+import { FilePaths, GlobalLabels, Labels, Variabels, Instructions, URIS, GetSymbolsFrom } from './GlobalVariabels';
 
 export class ASMCompletionProposer implements vscode.CompletionItemProvider {
     instructionItems: vscode.CompletionItem[];
@@ -51,7 +51,7 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             URIS.delete(uri);
             let TempFilePaths = FilePaths;
             for (let index = 0; index < FilePaths.length; index++) {
-                FilePaths.pop();                
+                FilePaths.pop();
             }
             TempFilePaths.forEach(document => {
                 if (document.uri === uri) {
@@ -105,9 +105,10 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             this.NewItem(".includeil", vscode.CompletionItemKind.Field, "this will include a file in line", "includeil");
 
             this.NewItem(".global", vscode.CompletionItemKind.Field, "this will set a label to be global", "global");
+            this.NewItem(".local", vscode.CompletionItemKind.Field, "this will set a label to be local", "local");
 
             this.NewItem(".ENDM", vscode.CompletionItemKind.Field, "the end of a marco", "ENDM");
-            this.NewItem(".end struct", vscode.CompletionItemKind.Field, "the end of a struct", "end struct");
+            this.NewItem(".endstruct", vscode.CompletionItemKind.Field, "the end of a struct", "endstruct");
         }
         else if (triggerCharacter === '[') {
             this.CodeCompletionLabels();
@@ -119,13 +120,25 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
             this.CodeCompletionInstructions(CurrentLine);
         }
         else if (sections.length >= 1) {
-            this.CodeCompletionRegister(currentchar.toUpperCase());
+            if (sections[0].toUpperCase() == "MOV") {
+                this.NewItem("A CR0", vscode.CompletionItemKind.Field, "mov CR0 to A", "A,\tCR0");
+                this.NewItem("CR0 A", vscode.CompletionItemKind.Field, "mov A to CR0", "CR0,\tA");
+            }
+            else if (sections[0].toUpperCase() == "SEZ") {
+                this.NewItem("AX", vscode.CompletionItemKind.Field, "set AX to 0", "AX");
+                this.NewItem("A", vscode.CompletionItemKind.Field, "set A to 0", "A");
+            }
+            else
+            {
+                this.CodeCompletionRegister(currentchar.toUpperCase());
+            }
+
         }
         else {
-            this.NewItem("AX", vscode.CompletionItemKind.Field, "23 bit register", "AX");
-            this.NewItem("BX", vscode.CompletionItemKind.Field, "23 bit register", "BX");
-            this.NewItem("CX", vscode.CompletionItemKind.Field, "23 bit register", "CX");
-            this.NewItem("DX", vscode.CompletionItemKind.Field, "23 bit register", "DX");
+            this.NewItem("AX", vscode.CompletionItemKind.Field, "32 bit register", "AX");
+            this.NewItem("BX", vscode.CompletionItemKind.Field, "32 bit register", "BX");
+            this.NewItem("CX", vscode.CompletionItemKind.Field, "32 bit register", "CX");
+            this.NewItem("DX", vscode.CompletionItemKind.Field, "32 bit register", "DX");
             this.NewItem("[HL]", vscode.CompletionItemKind.Field, "32 bit register addressed", "[HL]");
         }
 
@@ -142,41 +155,35 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
     }
 
     CodeCompletionLabels() {
+        this.NewItem("DS:B", vscode.CompletionItemKind.Field, "use the DS segment register with B", "DS:B")
+        this.NewItem("ES:B", vscode.CompletionItemKind.Field, "use the DS segment register with B", "ES:B")
         for (let index = 0; index < Labels.length; index++) {
             const element = Labels[index];
             this.NewItem(element.name, vscode.CompletionItemKind.Field, "", element.name);
-        }
-        for (let index = 0; index < Variabels.length; index++) {
-            const element = Variabels[index];
-            this.NewItem(element, vscode.CompletionItemKind.Field, "", element);
-        }
-        for (let index = 0; index < GlobalLabels.length; index++) {
-            const element = GlobalLabels[index];
-            this.NewItem(element, vscode.CompletionItemKind.Field, "", element);
         }
     }
 
     CodeCompletionRegister(CurrentLine: string) {
         if (CurrentLine.startsWith("A")) {
-            this.NewItem("AX", vscode.CompletionItemKind.Field, "16 bit register", "AX");
+            this.NewItem("AX", vscode.CompletionItemKind.Field, "32 bit register", "AX");
             this.NewItem("AL", vscode.CompletionItemKind.Field, "the low 8 bits part of AX", "AL");
             this.NewItem("AH", vscode.CompletionItemKind.Field, "the high 8 bits part of AX", "AH");
         }
         else if (CurrentLine.startsWith("B")) {
             this.NewItem("BP", vscode.CompletionItemKind.Field, "base pointer", "BP");
             this.NewItem("BPX", vscode.CompletionItemKind.Field, "base pointer", "BPX");
-            this.NewItem("BX", vscode.CompletionItemKind.Field, "16 bit register", "BX");
+            this.NewItem("BX", vscode.CompletionItemKind.Field, "32 bit register", "BX");
             this.NewItem("BL", vscode.CompletionItemKind.Field, "the low 8 bits part of BX", "BL");
             this.NewItem("BH", vscode.CompletionItemKind.Field, "the high 8 bits part of BX", "BH");
         }
         else if (CurrentLine.startsWith("C")) {
-            this.NewItem("CX", vscode.CompletionItemKind.Field, "16 bit register", "CX");
+            this.NewItem("CX", vscode.CompletionItemKind.Field, "32 bit register", "CX");
             this.NewItem("CL", vscode.CompletionItemKind.Field, "the low 8 bits part of CX", "CL");
             this.NewItem("CH", vscode.CompletionItemKind.Field, "the high 8 bits part of CX", "CH");
         }
         else if (CurrentLine.startsWith("D")) {
             this.NewItem("DS", vscode.CompletionItemKind.Field, "16 bit segment data register", "DS");
-            this.NewItem("DX", vscode.CompletionItemKind.Field, "16 bit register", "DX");
+            this.NewItem("DX", vscode.CompletionItemKind.Field, "32 bit register", "DX");
             this.NewItem("DL", vscode.CompletionItemKind.Field, "the low 8 bits part of DX", "DL");
             this.NewItem("DH", vscode.CompletionItemKind.Field, "the high 8 bits part of DX", "DH");
         }
@@ -218,7 +225,7 @@ export class ASMCompletionProposer implements vscode.CompletionItemProvider {
         for (let index = 0; index < Instructions.length; index++) {
             const element = Instructions[index];
             if (element[0].toUpperCase().includes(CurrentLine[0].toUpperCase())) {
-                this.NewItem(element, vscode.CompletionItemKind.Keyword, "", element.padEnd(6, ' '));
+                this.NewItem(Instructions[index], vscode.CompletionItemKind.Keyword, "", element.padEnd(6, ' '));
             }
         }
     }

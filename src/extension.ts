@@ -31,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     context.subscriptions.push(vscode.languages.registerHoverProvider(selector, new ASMHoverProvider()));
     context.subscriptions.push(vscode.languages.registerCompletionItemProvider(selector, new ASMCompletionProposer(), "ABCDEFGHIJKLMNOPQRSTUVWXYZ", "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toLowerCase(), ".", "[", "&"))
-    context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new ASMSyntaxHighlighting(), legend));
+    //context.subscriptions.push(vscode.languages.registerDocumentSemanticTokensProvider(selector, new ASMSyntaxHighlighting(), legend));
     //context.subscriptions.push(vscode.languages.registerDocumentSymbolProvider(selector, new ASMDocumentSymbolProvider()));
 
 }
