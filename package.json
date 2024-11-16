@@ -2,7 +2,7 @@
   "name": "bgc-assembly-language",
   "displayName": "ACL",
   "description": "This is the extension for the \"bgc-assembly-language\".",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "BjornBEs",
   "keywords": [],
   "author": "BjornBEs",
@@ -58,6 +58,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
+    "@vscode/vsce-sign": "^2.0.5",
     "glob": "^10.4.2"
   }
 }

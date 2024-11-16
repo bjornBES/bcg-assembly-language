@@ -13,7 +13,7 @@ export function activate(context: vscode.ExtensionContext) {
 
     GlobalShit.GetInstructions();
     GlobalShit.GetRegister();
-
+    
     context.subscriptions.push(vscode.workspace.onDidOpenTextDocument(document => {
         if (document.languageId !== "acl") return;
         if (GlobalShit.FilePaths.includes(document)) return;

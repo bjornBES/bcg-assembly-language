@@ -8,3 +8,7 @@
 
 fixed syntax highlighting
 more code completion things
+
+## 1.0.2
+
+bug fixes

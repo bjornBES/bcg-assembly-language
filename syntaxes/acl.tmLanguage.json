@@ -114,10 +114,6 @@
 					"match": "[\\s]*\\.\\b(org|ORG)"
 				},
 				{
-					"name": "keyword.control.directive.struct",
-					"match": "^\\.struct"
-				},
-				{
 					"name": "keyword.control.directive.endStruct",
 					"match": "^\\.endstruct"
 				},
@@ -136,7 +132,12 @@
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL register name",
-					"match": "[\\s,]*\\b(pc|cr0|f|r[1-16]||PC|CR0|F|R[1-16])\\b[\\s,]"
+					"match": "[\\s,]*\\b(pc|cr0|f||PC|CR0|F|)\\b[\\s,]"
+				},
+				{
+					"name": "variable.language.ACL",
+					"comment": "ACL R register name",
+					"match": "[\\s,]*\\b(R[\\d]+[A-Z]*|r[\\d]+[a-z]*)[\\s,]"
 				},
 				{
 					"name": "variable.language.ACL",
@@ -151,7 +152,7 @@
 				{
 					"name": "variable.language.ACL",
 					"comment": "ACL segment register name",
-					"match": "[\\s,]*\\b([A-Z]S|[a-z]s)\\b[\\s,]"
+					"match": "[\\s,]*\\b([A-Z]+S|[a-z]+s)\\b[\\s,]"
 				},
 				{
 					"comment": "for Paths and shit",
@@ -275,7 +276,7 @@
 			"patterns": [
 				{
 					"name": "entity.name.class",
-					"match": "\\s[A-Za-z_][A-Za-z_0-9]*"
+					"match": "^\\.struct\\s[A-Za-z_][A-Za-z_0-9]*"
 				},
 				{
 					"name":"entity.name",

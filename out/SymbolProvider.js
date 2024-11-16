@@ -7,7 +7,7 @@ class ASMDocumentSymbolProvider {
     }
     provideDocumentSymbols(document, token) {
         let symbols = [];
-        symbols = GlobalVariabels_1.GetDocumentSymbol(document);
+        symbols = (0, GlobalVariabels_1.GetDocumentSymbol)(document);
         return symbols;
     }
 }
